@@ -22,8 +22,8 @@ services:
       POSTGRES_USER: zabbix
       POSTGRES_PASSWORD: your_password
       ZBX_JAVAGATEWAY: "zabbix-java-gateway"
-      ports:
-        - "10050:10050"  # Expose Zabbix server agent port to the host
+    ports:
+      - "10050:10050"  # Expose Zabbix server agent port to the host
     networks:
       - zabbix-net
 
