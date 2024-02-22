@@ -1,0 +1,51 @@
+version: "3.1"
+
+services:
+  postgresql:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: zabbix
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: your_password
+    volumes:
+      - ./zabbix-postgres:/var/lib/postgresql/data
+    networks:
+      - zabbix-net
+
+  zabbix-server-pgsql:
+    image: zabbix/zabbix-server-pgsql:latest
+    depends_on:
+      - postgresql
+    environment:
+      DB_SERVER_HOST: "postgresql"
+      POSTGRES_DB: zabbix
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: your_password
+      ZBX_JAVAGATEWAY: "zabbix-java-gateway"
+    networks:
+      - zabbix-net
+
+  zabbix-web-nginx-pgsql:
+    image: zabbix/zabbix-web-nginx-pgsql:latest
+    depends_on:
+      - postgresql
+      - zabbix-server-pgsql
+    environment:
+      DB_SERVER_HOST: "postgresql"
+      POSTGRES_DB: zabbix
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: your_password
+      ZBX_SERVER_HOST: "zabbix-server-pgsql"
+      PHP_TZ: "Asia/Ho_Chi_Minh"
+    ports:
+      - "8888:8080"
+      - "8443:8443"
+    networks:
+      - zabbix-net
+
+networks:
+  zabbix-net:
+    driver: bridge
+
+volumes:
+  zabbix-postgres:
